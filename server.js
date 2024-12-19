@@ -18,7 +18,8 @@ app.use(cookieParser());
 app.use(cors({
     origin: [
         "http://localhost:3000",  // Local development URL
-        "https://fe-rfyq.onrender.com"  // Allow the frontend from Render
+        "https://fe-rfyq.onrender.com",  // Allow the frontend from Render
+        "https://www.binhduy1402.id.vn/" // New URL added
     ],
     credentials: true,  // Allow cookies to be sent across origins
 }));
