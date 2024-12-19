@@ -7,41 +7,51 @@ const app = express();
 const cookieParser = require("cookie-parser");
 dotenv.config();
 
-var multer = require('multer');
-
 const PORT = process.env.PORT || 8073;
+
+// Kết nối Database
 connectDB();
 
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
-
-app.use(cors({
-    origin: [
-        "http://localhost:3000",  // Local development URL
-        "https://fe-rfyq.onrender.com",  // Allow the frontend from Render
-        "https://www.binhduy1402.id.vn/" // New URL added
-    ],
-    credentials: true,  // Allow cookies to be sent across origins
-}));
-
 app.use(bodyParser.json());
 
-// Cart API
+// Cấu hình CORS
+const allowedOrigins = [
+    "http://localhost:3000",  // Local development URL
+    "https://fe-rfyq.onrender.com",  // Allow the frontend from Render
+    "https://www.binhduy1402.id.vn"  // Production URL
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Kiểm tra nếu origin hợp lệ, cho phép hoặc trả về lỗi
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,  // Cho phép gửi cookies và credentials
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Các phương thức HTTP được phép
+    allowedHeaders: ["Content-Type", "Authorization"], // Các tiêu đề được phép
+}));
+
+// Định tuyến các API
 const cartAPI = require('./api/cart.api');
 app.use('/carts', cartAPI);
 
-// Topping API
 const toppingAPI = require('./api/topping.api');
 app.use('/toppings', toppingAPI);
 
-// List API
 const listAPI = require('./api/list.api');
 app.use('/lists', listAPI);
 
-// Order API
 const orderAPI = require('./api/order.api');
 app.use('/orders', orderAPI);
 
+// Bắt đầu server
 app.listen(PORT, () => {
-    console.log('Order Management Service is running');
+    console.log(`Order Management Service is running on port ${PORT}`);
 });
